@@ -19,7 +19,6 @@
       padding: 24px;
       display: flex; flex-direction: column;
     }
-    /* CLOCK */
     .clock-row {
       display: flex; align-items: center; justify-content: space-between;
       padding: 10px 16px; flex-shrink: 0;
@@ -34,7 +33,6 @@
       transition: color 0.2s; position: relative; top: -10px;
     }
     .gear-btn:hover { color: var(--primary); }
-    /* CALENDAR */
     .calendar-wrap {
       margin-bottom: 20px; border: 1px solid #eee;
       border-radius: 12px; overflow: hidden; flex-shrink: 0;
@@ -67,7 +65,6 @@
       border-radius: 50%; background: var(--primary); margin: 2px auto 0;
     }
     .cal-day.selected.has-log::after { background: white; }
-    /* TASK GRID */
     .task-grid {
       display: grid; grid-template-columns: repeat(5, 1fr);
       gap: 10px; margin-bottom: 20px; flex-shrink: 0;
@@ -85,7 +82,6 @@
       box-shadow: 0 6px 16px rgba(52,152,219,0.2);
     }
     .task-btn:active { transform: scale(0.95); }
-    /* LOG */
     .log-list { list-style: none; padding: 0; }
     .log-item {
       background: #f8f9fa; padding: 14px 18px; margin: 8px 0;
@@ -99,7 +95,6 @@
     .edit-btn { background: #3498db; color: white; padding: 8px 14px; font-size: 14px; border: none; border-radius: 8px; cursor: pointer; }
     .edit-btn:hover { background: #2980b9; }
     .empty { text-align: center; color: #95a5a6; padding: 60px 20px; font-size: 1.1rem; }
-    /* MANAGE */
     .task-manage-item {
       display: flex; align-items: center; justify-content: space-between;
       padding: 14px 16px; background: #f8f9fa; margin: 8px 0;
@@ -117,7 +112,6 @@
       background: var(--primary); color: white; border: none;
       padding: 14px 24px; border-radius: 10px; font-size: 16px; cursor: pointer;
     }
-    /* EDIT MODAL */
     .modal-overlay {
       display: none; position: fixed; inset: 0;
       background: rgba(0,0,0,0.4); z-index: 1000;
@@ -136,7 +130,6 @@
     .modal-actions button { flex: 1; padding: 10px; border-radius: 8px; font-size: 14px; cursor: pointer; border: none; }
     .btn-cancel-modal { background: #f0f0f0; color: #555; }
     .btn-save-modal { background: var(--primary); color: white; font-weight: 700; }
-    /* TIME PICKER */
     .time-picker { display: flex; align-items: center; gap: 8px; }
     .time-picker-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
     .time-picker-col span {
@@ -157,7 +150,7 @@
   <div id="tab0" class="tab-content">
     <div class="clock-row">
       <div class="live-clock" id="liveClock"></div>
-      <button class="gear-btn" onclick="switchTab(1)" title="업무 목록 관리">⚙️</button>
+      <button class="gear-btn" onclick="switchTab(1)" title="목록 관리">⚙️</button>
     </div>
 
     <div class="calendar-wrap">
@@ -181,11 +174,11 @@
   <div id="tab1" class="tab-content" style="display:none;">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-shrink:0;">
       <button onclick="switchTab(0)" style="background:none;border:1px solid #ddd;color:#555;padding:6px 12px;border-radius:8px;font-size:14px;cursor:pointer;">← 돌아가기</button>
-      <h2 style="margin:0;">업무 목록 관리</h2>
+      <h2 style="margin:0;">목록 관리</h2>
     </div>
     <div id="manageList"></div>
     <div class="add-area">
-      <input type="text" id="newTask" placeholder="새 업무 이름 입력 (예: 코드 리뷰)">
+      <input type="text" id="newTask" placeholder="새 항목 이름 입력 (예: 벤치프레스)">
       <button onclick="addNewTask()">추가하기</button>
     </div>
   </div>
@@ -223,10 +216,10 @@
 </div>
 
 <script>
-let tasks = JSON.parse(localStorage.getItem('workTasks')) || [
-  "회의 준비", "보고서 작성", "코드 리뷰", "이메일 처리"
+let tasks = JSON.parse(localStorage.getItem('healthTasks')) || [
+  "벤치프레스", "스쿼트", "데드리프트", "풀업"
 ];
-let logs = JSON.parse(localStorage.getItem('workLogs')) || [];
+let logs = JSON.parse(localStorage.getItem('healthLogs')) || [];
 
 const todayDate = new Date();
 let calViewDate = new Date(todayDate.getFullYear(), todayDate.getMonth(), 1);
@@ -236,7 +229,6 @@ function toDateStr(d) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
-// ---- CLOCK ----
 function updateLiveClock() {
   document.getElementById('liveClock').textContent =
     new Date().toLocaleString('ko-KR', {
@@ -247,7 +239,6 @@ function updateLiveClock() {
 setInterval(updateLiveClock, 1000);
 updateLiveClock();
 
-// ---- TABS ----
 function switchTab(n) {
   document.getElementById('tab0').style.display = n === 0 ? 'flex' : 'none';
   document.getElementById('tab1').style.display = n === 1 ? 'flex' : 'none';
@@ -255,7 +246,6 @@ function switchTab(n) {
   if (n === 1) renderManageList();
 }
 
-// ---- CALENDAR ----
 function renderCalendar() {
   const yr = calViewDate.getFullYear(), mo = calViewDate.getMonth();
   document.getElementById('calMonthLabel').textContent = `${yr}년 ${mo+1}월`;
@@ -265,8 +255,7 @@ function renderCalendar() {
   const logDates = new Set(logs.map(l => toDateStr(new Date(l.rawTime))));
   let html = ['일','월','화','수','목','금','토'].map(d => `<div class="cal-day-header">${d}</div>`).join('');
   for (let i = 0; i < firstDay; i++) {
-    const d = new Date(yr, mo, -firstDay+i+1);
-    const ds = toDateStr(d);
+    const d = new Date(yr, mo, -firstDay+i+1), ds = toDateStr(d);
     html += `<div class="cal-day other-month ${ds===selectedDateStr?'selected':''} ${logDates.has(ds)?'has-log':''}" onclick="selectDate('${ds}')">${d.getDate()}</div>`;
   }
   for (let d = 1; d <= lastDate; d++) {
@@ -295,7 +284,6 @@ function selectDate(ds) {
     ds === toDateStr(todayDate) ? '오늘' : `${y}년 ${parseInt(m)}월 ${parseInt(d)}일`;
 }
 
-// ---- TASK BUTTONS ----
 function renderTaskButtons() {
   const grid = document.getElementById('taskGrid');
   grid.innerHTML = '';
@@ -316,12 +304,11 @@ function recordTime(taskName) {
     rawTime: now.getTime()
   });
   if (logs.length > 100) logs.pop();
-  localStorage.setItem('workLogs', JSON.stringify(logs));
+  localStorage.setItem('healthLogs', JSON.stringify(logs));
   renderLogs();
   renderCalendar();
 }
 
-// ---- LOGS ----
 function renderLogs() {
   const list = document.getElementById('logList');
   list.innerHTML = '';
@@ -352,7 +339,7 @@ function clearAllLogs() {
   const label = document.getElementById('logDateLabel').textContent;
   if (!confirm(`"${label}"의 기록을 전체 삭제할까요?`)) return;
   logs = logs.filter(l => toDateStr(new Date(l.rawTime)) !== selectedDateStr);
-  localStorage.setItem('workLogs', JSON.stringify(logs));
+  localStorage.setItem('healthLogs', JSON.stringify(logs));
   renderLogs();
   renderCalendar();
 }
@@ -362,12 +349,11 @@ function deleteLog(rawTime) {
   if (!log) return;
   if (!confirm(`"${log.task}" 기록을 정말 삭제할까요?`)) return;
   logs = logs.filter(l => l.rawTime != rawTime);
-  localStorage.setItem('workLogs', JSON.stringify(logs));
+  localStorage.setItem('healthLogs', JSON.stringify(logs));
   renderLogs();
   renderCalendar();
 }
 
-// ---- MANAGE ----
 function renderManageList() {
   const container = document.getElementById('manageList');
   container.innerHTML = '';
@@ -378,11 +364,9 @@ function renderManageList() {
     div.draggable = false;
     div.dataset.index = i;
     div.innerHTML = `<span class="drag-handle">⠿</span><span class="task-name" style="font-size:1.05rem;flex:1;">${task}</span><div style="display:flex;gap:6px;"><button class="edit-btn" onclick="editTask(${i}, this)">수정</button><button class="delete-btn" onclick="deleteTask(${i})">삭제</button></div>`;
-
     const handle = div.querySelector('.drag-handle');
     handle.addEventListener('mousedown', () => { div.draggable = true; });
     handle.addEventListener('touchstart', () => { div.draggable = true; }, { passive: true });
-    div.addEventListener('dragend', () => { div.draggable = false; });
     div.addEventListener('dragstart', () => { dragSrcIndex = i; setTimeout(() => div.classList.add('dragging'), 0); });
     div.addEventListener('dragend', () => { div.draggable = false; div.classList.remove('dragging'); container.querySelectorAll('.task-manage-item').forEach(el => el.classList.remove('drag-over')); });
     div.addEventListener('dragover', e => { e.preventDefault(); container.querySelectorAll('.task-manage-item').forEach(el => el.classList.remove('drag-over')); div.classList.add('drag-over'); });
@@ -392,7 +376,7 @@ function renderManageList() {
       if (dragSrcIndex === null || dragSrcIndex === ti) return;
       const moved = tasks.splice(dragSrcIndex, 1)[0];
       tasks.splice(ti, 0, moved);
-      localStorage.setItem('workTasks', JSON.stringify(tasks));
+      localStorage.setItem('healthTasks', JSON.stringify(tasks));
       renderManageList(); renderTaskButtons();
     });
     container.appendChild(div);
@@ -402,10 +386,10 @@ function renderManageList() {
 function addNewTask() {
   const input = document.getElementById('newTask');
   const name = input.value.trim();
-  if (!name) { alert('업무 이름을 입력해주세요!'); return; }
-  if (tasks.includes(name)) { alert('이미 존재하는 업무예요!'); return; }
+  if (!name) { alert('이름을 입력해주세요!'); return; }
+  if (tasks.includes(name)) { alert('이미 존재하는 항목이에요!'); return; }
   tasks.push(name);
-  localStorage.setItem('workTasks', JSON.stringify(tasks));
+  localStorage.setItem('healthTasks', JSON.stringify(tasks));
   input.value = '';
   renderManageList(); renderTaskButtons();
 }
@@ -414,41 +398,34 @@ function editTask(index, btn) {
   const div = btn.closest('.task-manage-item');
   const nameSpan = div.querySelector('.task-name');
   const currentName = tasks[index];
-
   const input = document.createElement('input');
-  input.type = 'text';
-  input.value = currentName;
+  input.type = 'text'; input.value = currentName;
   input.style.cssText = 'flex:1;font-size:1rem;padding:4px 8px;border:2px solid var(--primary);border-radius:6px;outline:none;';
   nameSpan.replaceWith(input);
   input.focus(); input.select();
-
   btn.textContent = '저장';
   btn.onclick = () => commitEdit();
-
   function commitEdit() {
     const newName = input.value.trim();
-    if (!newName) { alert('업무 이름을 입력해주세요!'); return; }
-    if (newName !== currentName && tasks.includes(newName)) { alert('이미 존재하는 업무예요!'); return; }
+    if (!newName) { alert('이름을 입력해주세요!'); return; }
+    if (newName !== currentName && tasks.includes(newName)) { alert('이미 존재하는 항목이에요!'); return; }
     tasks[index] = newName;
-    localStorage.setItem('workTasks', JSON.stringify(tasks));
-    renderManageList();
-    renderTaskButtons();
+    localStorage.setItem('healthTasks', JSON.stringify(tasks));
+    renderManageList(); renderTaskButtons();
   }
-
   input.addEventListener('keydown', e => {
     if (e.key === 'Enter') commitEdit();
-    if (e.key === 'Escape') { renderManageList(); }
+    if (e.key === 'Escape') renderManageList();
   });
 }
 
 function deleteTask(index) {
-  if (!confirm(`"${tasks[index]}" 업무를 정말 삭제할까요?`)) return;
+  if (!confirm(`"${tasks[index]}"을 정말 삭제할까요?`)) return;
   tasks.splice(index, 1);
-  localStorage.setItem('workTasks', JSON.stringify(tasks));
+  localStorage.setItem('healthTasks', JSON.stringify(tasks));
   renderManageList(); renderTaskButtons();
 }
 
-// ---- EDIT MODAL ----
 let editTargetRawTime = null, pickH = 0, pickM = 0;
 
 function startEdit(unit) {
@@ -511,11 +488,10 @@ function saveEditLog() {
   d.setHours(pickH, pickM, 0, 0);
   logs[idx].rawTime = d.getTime(); logs[idx].task = newTask;
   logs[idx].timestamp = d.toLocaleString('ko-KR', { year:'numeric', month:'long', day:'numeric', hour:'numeric', minute:'2-digit', second:'2-digit', hour12:true });
-  localStorage.setItem('workLogs', JSON.stringify(logs));
+  localStorage.setItem('healthLogs', JSON.stringify(logs));
   closeEditModal(); renderLogs();
 }
 
-// ---- INIT ----
 renderTaskButtons();
 renderCalendar();
 renderLogs();
